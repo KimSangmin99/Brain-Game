@@ -38,6 +38,14 @@ test("complete five questions, retain result after reload, unlock only the next 
       .click();
   }
   await expect(page.locator(".result-score")).toContainText("10,000");
+  await expect(
+    page.getByRole("navigation", { name: "주 메뉴", exact: true }),
+  ).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(
+    page.getByRole("navigation", { name: "모바일 주 메뉴", exact: true }),
+  ).toBeVisible();
+  await page.setViewportSize({ width: 1280, height: 900 });
   await expect(page.locator(".save-status")).toHaveText("기기에 저장됨");
   await page.getByRole("link", { name: "내 기록 보기", exact: true }).click();
   await expect(page).toHaveURL(/\/records$/);
@@ -86,7 +94,7 @@ test("tutorial and hint are usable on mobile with no horizontal overflow", async
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: /즐거운 도전/ }),
+    page.getByRole("heading", { name: /오늘도 가볍게/ }),
   ).toBeVisible();
   await page.screenshot({
     path: "test-results/home-mobile.png",
@@ -127,11 +135,13 @@ test("tutorial and hint are usable on mobile with no horizontal overflow", async
 test("desktop laboratory has functional category filters", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
-  await expect(page.locator(".game-card")).toHaveCount(8);
+  await expect(page.locator(".game-card")).toHaveCount(2);
   await page.screenshot({
     path: "test-results/home-desktop.png",
     fullPage: true,
   });
+  await page.getByRole("link", { name: "게임 모두 보기" }).click();
+  await expect(page.locator(".game-card")).toHaveCount(8);
   await page.getByRole("button", { name: "추론", exact: true }).click();
   await expect(page.locator(".game-card")).toHaveCount(2);
   await page.getByRole("link", { name: /규칙 분석/ }).click();

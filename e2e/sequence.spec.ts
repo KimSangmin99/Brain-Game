@@ -65,6 +65,10 @@ test("sequence completion persists, while pattern progress stays independent", a
   await expect(page.locator(".record-info h2")).toContainText("시퀀스 기억");
   await page.reload();
   await expect(page.locator(".record-card")).toHaveCount(1);
+  await page.goto("/");
+  await expect(
+    page.getByRole("link", { name: "시퀀스 기억 이어하기" }),
+  ).toHaveAttribute("href", "/games/sequence/play?stage=2&mode=stage");
   await page.goto("/games/sequence");
   await expect(
     page.getByRole("link", { name: "스테이지 2 도전" }),

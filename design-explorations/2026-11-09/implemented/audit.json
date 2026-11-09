@@ -1,0 +1,338 @@
+[
+  {
+    "name": "home",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "games",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "pattern",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "sequence",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "upcoming",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "patternIntro",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "sequenceIntro",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "records",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "account",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "login",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "register",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "guide",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "challenges",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "notFound",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "home",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "games",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "pattern",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "sequence",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "upcoming",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "patternIntro",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "sequenceIntro",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "records",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "account",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "login",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "register",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "guide",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "challenges",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "notFound",
+    "width": 768,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "home",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "games",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "pattern",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "sequence",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "upcoming",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "patternIntro",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "sequenceIntro",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "records",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "account",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "login",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "register",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "guide",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "challenges",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "notFound",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "home-reflow",
+    "width": 640,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "games-reflow",
+    "width": 640,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "patternIntro-reflow",
+    "width": 640,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "login-reflow",
+    "width": 640,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "home-large",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "games-large",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "pattern-large",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "sequenceIntro-large",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "login-large",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "register-large",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "patternFeedback",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "patternResult",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "recordsFilled",
+    "width": 1280,
+    "overflow": false,
+    "smallControls": 0
+  },
+  {
+    "name": "recordsFilled",
+    "width": 360,
+    "overflow": false,
+    "smallControls": 0
+  }
+]

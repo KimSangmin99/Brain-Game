@@ -16,3 +16,7 @@ function createDatabase() {
 export function getDatabase() {
   return (cached ??= createDatabase()).db;
 }
+
+export function getSqlClient() {
+  return (cached ??= createDatabase()).client;
+}

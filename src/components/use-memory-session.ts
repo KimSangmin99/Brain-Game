@@ -2,12 +2,16 @@
 import { useEffect, useState } from "react";
 import type { MemoryAttempt, MemoryEngine } from "@/lib/memory-types";
 import { nextStage } from "@/lib/memory-common";
-import { readAllAttempts, saveAttempt } from "@/lib/storage";
+import { saveAttempt } from "@/lib/storage";
+
+import { useAccount } from "./account-provider";
 
 export function useMemorySession<
   T extends MemoryAttempt,
   A extends { type: string },
 >(engine: MemoryEngine<T, A>, stage: number, mode: "stage" | "practice") {
+  const { user, load, upload } = useAccount();
+  const scope = user?.id ?? "guest";
   const [attempt, setAttempt] = useState<T | null>(null);
   const [error, setError] = useState("");
   const [locked, setLocked] = useState(false);
@@ -22,7 +26,7 @@ export function useMemorySession<
     let timeout: ReturnType<typeof setTimeout> | undefined;
     const initialize = async () => {
       try {
-        const history = (await readAllAttempts()).filter(engine.isAttempt);
+        const history = (await load()).filter(engine.isAttempt);
         if (!live) return;
         if (stage > nextStage(history)) {
           setLocked(true);
@@ -73,15 +77,17 @@ export function useMemorySession<
       controller.abort();
       release();
     };
-  }, [engine, stage, mode]);
+  }, [engine, stage, mode, load]);
   useEffect(() => {
     if (!attempt) return;
     let live = true;
-    saveAttempt(attempt)
+    saveAttempt(attempt, scope)
       .then(() => {
         if (live) {
           setSaved(attempt.revision);
           setSaveError(false);
+          if (user && attempt.phase === "result")
+            void upload([attempt]).catch(() => {});
         }
       })
       .catch(() => {
@@ -90,7 +96,7 @@ export function useMemorySession<
     return () => {
       live = false;
     };
-  }, [attempt]);
+  }, [attempt, scope, user, upload]);
   useEffect(() => {
     const pause = () => {
       if (document.hidden) setAttempt((a) => (a ? engine.recover(a) : a));
@@ -102,7 +108,7 @@ export function useMemorySession<
     setAttempt((a) => (a ? engine.reduce(a, action) : a));
   const retrySave = () => {
     if (attempt)
-      void saveAttempt(attempt)
+      void saveAttempt(attempt, scope)
         .then(() => {
           setSaved(attempt.revision);
           setSaveError(false);

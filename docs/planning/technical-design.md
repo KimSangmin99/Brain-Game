@@ -1,6 +1,6 @@
 # 기술·데이터·인터페이스 설계
 
-상태: v0.3 구현 기준안. 사용자가 Vercel + Supabase 구성을 선택했다. 구현 현황은 [개발 진행 기록](../development-status.md), 실제 연결 절차는 [배포 안내](../deployment.md)를 따른다. 아래 전체 설계가 모두 구현된 것은 아니다.
+상태: v0.4 구현 기준안. 사용자가 Vercel + Supabase 구성을 선택했다. 구현 현황은 [개발 진행 기록](../development-status.md), 실제 연결 절차는 [배포 안내](../deployment.md)를 따른다. 아래 전체 설계가 모두 구현된 것은 아니다.
 
 ## 1. 구성
 
@@ -29,7 +29,7 @@
 
 ID는 UUID, 시간은 UTC timestamp, 점수·시도 수는 정수. 아래 관계와 유일성은 DB 제약으로 구현한다.
 
-현재 첫 마이그레이션은 users, auth_sessions, action_tokens, attempts, progress, merge_receipts, challenge_events, official_entries, email_outbox의 9개 기반 테이블을 제공한다. 확인된 이메일과 확인 시각은 우선 users에 저장한다. 아래 모델의 콘텐츠 관리·문항 이벤트·요청키·감사·삭제 처리 등은 후속 마이그레이션으로 확장한다. 테이블 존재만으로 회원·동기화·경쟁 기능의 구현 완료를 의미하지 않는다.
+현재 첫 마이그레이션은 users, auth_sessions, action_tokens, attempts, progress, merge_receipts, challenge_events, official_entries, email_outbox의 9개 기반 테이블을 제공하고, 두 번째 마이그레이션은 auth_limits와 users의 안내 확인 열 2개를 추가한다. 확인된 이메일과 확인 시각은 우선 users에 저장한다. 아래 모델의 콘텐츠 관리·문항 이벤트·요청키·감사·삭제 처리 등은 후속 마이그레이션으로 확장한다. 현재 기본 회원·개인 완료 기록 동기화는 구현했으며 복구 이메일·공식 경쟁은 구현 전이다.
 
 | 테이블 | 핵심 데이터·제약 |
 | --- | --- |

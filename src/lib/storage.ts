@@ -8,15 +8,40 @@ const savedAttemptSchema = z.union([attemptSchema, sequenceSchema]);
 interface BrainDB extends DBSchema {
   attempts: { key: string; value: MemoryAttempt };
 }
-const database = () =>
-  openDB<BrainDB>("brain-game-guest", 1, {
-    upgrade(db) {
-      db.createObjectStore("attempts", { keyPath: "id" });
+const database = (scope = "guest") =>
+  openDB<BrainDB>(
+    scope === "guest" ? "brain-game-guest" : `brain-game-user-${scope}`,
+    1,
+    {
+      upgrade(db) {
+        db.createObjectStore("attempts", { keyPath: "id" });
+      },
     },
-  });
-export async function readAllAttempts(): Promise<MemoryAttempt[]> {
-  const db = await database();
+  );
+export async function readAllAttempts(
+  scope = "guest",
+): Promise<MemoryAttempt[]> {
+  const db = await database(scope);
   try {
+    if (scope === "guest" && typeof localStorage !== "undefined") {
+      const rows = await db.getAll("attempts");
+      for (const a of rows) {
+        const receipt = localStorage.getItem(`brain-linked-${a.id}`);
+        if (!receipt) continue;
+        try {
+          const metadata: { at: number } = JSON.parse(receipt);
+          if (
+            Number.isFinite(metadata.at) &&
+            Date.now() - metadata.at > 7 * 86400000
+          ) {
+            await db.delete("attempts", a.id);
+            localStorage.removeItem(`brain-linked-${a.id}`);
+          }
+        } catch {
+          /* Keep the original if a receipt cannot be read. */
+        }
+      }
+    }
     return (await db.getAll("attempts"))
       .map((value) => savedAttemptSchema.parse(value))
       .sort((a, b) => b.updatedAt - a.updatedAt);
@@ -24,9 +49,12 @@ export async function readAllAttempts(): Promise<MemoryAttempt[]> {
     db.close();
   }
 }
-export async function saveAttempt(attempt: MemoryAttempt): Promise<void> {
+export async function saveAttempt(
+  attempt: MemoryAttempt,
+  scope = "guest",
+): Promise<void> {
   const validated = savedAttemptSchema.parse(attempt);
-  const db = await database();
+  const db = await database(scope);
   try {
     const tx = db.transaction("attempts", "readwrite");
     const existing = await tx.store.get(attempt.id);
@@ -47,4 +75,14 @@ export function readAttempts(game: "pattern"): Promise<Attempt[]>;
 export function readAttempts(game: "sequence"): Promise<SequenceAttempt[]>;
 export async function readAttempts(game: "pattern" | "sequence" = "pattern") {
   return (await readAllAttempts()).filter((a) => attemptGame(a) === game);
+}
+
+export function sourceProfile(scope = "guest") {
+  const key = `brain-source-${scope}`;
+  let value = localStorage.getItem(key);
+  if (!value) {
+    value = crypto.randomUUID();
+    localStorage.setItem(key, value);
+  }
+  return value;
 }

@@ -30,6 +30,8 @@ export const users = privateSchema
       emailVerifiedAt: time("email_verified_at"),
       status: text("status").notNull().default("active"),
       profileVersion: integer("profile_version").notNull().default(1),
+      termsVersion: text("terms_version"),
+      termsAcceptedAt: time("terms_accepted_at"),
       createdAt: time("created_at").notNull().defaultNow(),
     },
     (t) => [
@@ -238,5 +240,17 @@ export const emailOutbox = privateSchema
         sql`${t.state} in ('pending','processing','sent','failed')`,
       ),
     ],
+  )
+  .enableRLS();
+
+export const authLimits = privateSchema
+  .table(
+    "auth_limits",
+    {
+      key: text("key").primaryKey(),
+      count: integer("count").notNull(),
+      expiresAt: time("expires_at").notNull(),
+    },
+    (t) => [index("limits_expiry").on(t.expiresAt)],
   )
   .enableRLS();

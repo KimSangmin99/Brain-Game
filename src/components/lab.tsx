@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { MemoryIllustration } from "./memory-illustration";
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
@@ -16,8 +17,6 @@ import {
   ScanSearch,
   ArrowLeftRight,
   Sparkles,
-  Target,
-  Flame,
   Trophy,
   ShieldCheck,
   CircleHelp,
@@ -28,7 +27,7 @@ import { configFor } from "@/lib/pattern";
 import { nextStage, outcome } from "@/lib/memory-common";
 import { sequenceConfig } from "@/lib/sequence";
 import { attemptGame, type MemoryAttempt } from "@/lib/memory-types";
-import { readAllAttempts } from "@/lib/storage";
+import { useAccount } from "./account-provider";
 export const icons = {
   grid: Grid2X2,
   layers: Layers,
@@ -40,12 +39,13 @@ export const icons = {
   switch: ArrowLeftRight,
 };
 export function useAttempts() {
+  const { load } = useAccount();
   const [attempts, setAttempts] = useState<MemoryAttempt[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   useEffect(() => {
     let live = true;
-    readAllAttempts()
+    load()
       .then((a) => {
         if (live) setAttempts(a);
       })
@@ -58,7 +58,7 @@ export function useAttempts() {
     return () => {
       live = false;
     };
-  }, []);
+  }, [load]);
   return { attempts, loading, error };
 }
 export function StorageWarning() {
@@ -69,53 +69,67 @@ export function StorageWarning() {
     </p>
   );
 }
-function GameCard({ game }: { game: Game }) {
+function GameCard({
+  game,
+  completed = 0,
+  compact = false,
+}: {
+  game: Game;
+  completed?: number;
+  compact?: boolean;
+}) {
   const Icon = icons[game.icon];
   return (
-    <Link className={`game-card ${game.color}`} href={`/games/${game.id}`}>
-      <div className="row between">
-        <span className="game-icon">
-          <Icon size={24} />
-        </span>
-        <span className="card-number">LAB / {game.number}</span>
-      </div>
+    <Link
+      className={`game-card ${game.color} ${game.available ? "" : "is-coming"}`}
+      href={`/games/${game.id}`}
+    >
+      <span className="game-icon">
+        <Icon size={28} />
+      </span>
       <div className="card-body">
-        <span className="category">{game.category}</span>
+        {!compact && (
+          <span className="category">
+            {game.category} · {game.available ? "플레이 가능" : "준비 중"}
+          </span>
+        )}
         <h3>{game.name}</h3>
-        <p>{game.tagline}</p>
+        <p>
+          {compact
+            ? `${game.id === "pattern" ? "빛의 위치를 기억해요" : "나타난 순서를 기억해요"} · ${completed}/30단계`
+            : game.tagline}
+        </p>
+        {game.available && !compact && (
+          <span className="card-progress">{completed} / 30단계 완료</span>
+        )}
       </div>
-      <div className="card-footer">
-        <span>
-          {game.available ? (
-            <>
-              <span className="status-dot" />
-              플레이 가능
-            </>
-          ) : (
-            "준비 중"
-          )}
-        </span>
-        <ArrowUpRight size={18} />
-      </div>
+      <ArrowUpRight className="card-arrow" size={23} aria-hidden="true" />
     </Link>
   );
 }
-export function GameLibrary({ compact = false }: { compact?: boolean }) {
+function completedStages(attempts: MemoryAttempt[], game: string) {
+  return new Set(
+    attempts
+      .filter(
+        (a) =>
+          attemptGame(a) === game && a.mode === "stage" && outcome(a).passed,
+      )
+      .map((a) => a.stage),
+  ).size;
+}
+export function GameLibrary() {
   const [filter, setFilter] = useState("전체");
+  const { attempts, loading, error } = useAttempts();
   return (
-    <section className="section">
+    <section className="section" aria-label="게임 목록">
       <div className="section-heading">
         <div>
-          <span className="eyebrow">EXPLORE THE LAB</span>
-          <h2>
-            {compact ? "어떤 능력을 탐험해 볼까요?" : "나에게 맞는 실험실"}
-          </h2>
+          <h2>원하는 게임을 골라보세요</h2>
+          <p className="muted">
+            지금은 기억 게임 2종을 플레이할 수 있어요. 나머지 6종은 준비
+            중입니다.
+          </p>
         </div>
-        {compact && (
-          <Link className="text-link" href="/games">
-            모든 게임 <ArrowRight size={16} />
-          </Link>
-        )}
       </div>
       <div className="filters" role="group" aria-label="게임 분야">
         {["전체", "기억", "추론", "논리", "주의·판단"].map((f) => (
@@ -129,158 +143,128 @@ export function GameLibrary({ compact = false }: { compact?: boolean }) {
           </button>
         ))}
       </div>
-      <div className="game-grid">
+      {error && <StorageWarning />}
+      <div className="game-grid" aria-busy={loading}>
         {games
           .filter((g) => filter === "전체" || g.category === filter)
           .map((g) => (
-            <GameCard key={g.id} game={g} />
+            <GameCard
+              key={g.id}
+              game={g}
+              completed={completedStages(attempts, g.id)}
+            />
           ))}
       </div>
+      <p className="fine-print">
+        게임마다 진행도가 따로 저장돼요. 원하는 게임부터 시작해도 괜찮아요.
+      </p>
     </section>
   );
 }
-function HeroArt() {
-  return (
-    <div className="hero-art" aria-hidden="true">
-      <div className="orbit-ring one" />
-      <div className="orbit-ring two" />
-      <div className="orbit-label label-one">
-        <span className="status-dot" /> MEMORY LAB
-      </div>
-      <div className="floating-symbol">
-        <Sparkles size={21} />
-      </div>
-      <div className="art-board">
-        {Array.from({ length: 9 }, (_, i) => (
-          <div
-            className={[0, 1, 4, 8].includes(i) ? "art-cell lit" : "art-cell"}
-            key={i}
-          >
-            {[0, 1, 4, 8].includes(i) && <span />}
-          </div>
-        ))}
-      </div>
-      <div className="orbit-label label-two">관찰하고, 기억하고, 발견하기</div>
-      <span className="art-cross">+</span>
-    </div>
-  );
-}
 export function Home() {
+  const { user } = useAccount();
   const { attempts, loading, error } = useAttempts();
-  const completed = attempts.filter((a) => a.phase === "result");
-  const passes = new Set(
-    completed
-      .filter((a) => a.mode === "stage" && outcome(a).passed)
-      .map((a) => `${attemptGame(a)}:${a.stage}`),
-  ).size;
   const recentGame = attempts.length ? attemptGame(attempts[0]) : "pattern";
-  const best = completed.length ? outcome(completed[0]).score : null;
+  const game = games.find((g) => g.id === recentGame)!;
+  const own = attempts.filter((a) => attemptGame(a) === recentGame);
+  const active = own.find((a) => a.phase !== "result");
+  const stage = active?.stage ?? nextStage(own);
+  const mode = active?.mode ?? "stage";
+  const passes =
+    completedStages(attempts, "pattern") +
+    completedStages(attempts, "sequence");
   return (
     <>
       <div className="welcome-line">
         <span>
-          <span className="status-dot" /> 연구소에 오신 것을 환영합니다
+          {user
+            ? `${user.nickname}님, 반가워요.`
+            : attempts.length
+              ? "다시 오셨네요. 반가워요."
+              : "나를 위한 작은 연습을 시작해요."}
         </span>
-        <span>YOUR MIND, YOUR PACE</span>
+        <span className="pill">
+          {loading
+            ? "기록 확인 중…"
+            : passes
+              ? `${passes}개의 단계를 완료했어요`
+              : "나만의 속도로 시작해요"}
+        </span>
       </div>
-      <section className="hero">
+      <section className="hero" aria-labelledby="home-title">
         <div className="hero-copy">
-          <span className="eyebrow pill">
-            <Sparkles size={14} />
-            매일 새로운 발견
-          </span>
-          <h1>
-            즐거운 도전,
-            <br />
-            생각의 <em>새로운 가능성.</em>
+          <h1 id="home-title">
+            오늘도 가볍게,
+            <br />한 번의 발견.
           </h1>
           <p>
-            기억하고, 추리하고, 연결하며.
+            {attempts.length
+              ? `마지막으로 도전한 ${game.name}을 이어가세요.`
+              : "짧은 게임으로 기억하는 방법을 연습해 보세요."}
             <br />
-            게임 속에서 나만의 해결 방법을 발견해 보세요.
+            정답을 찾고, 해설에서 나만의 방법을 발견해요.
           </p>
-          <div className="hero-actions">
-            <Link className="button primary" href={`/games/${recentGame}`}>
-              {attempts.length ? "이어서 도전하기" : "첫 번째 실험 시작하기"}
-              <ArrowRight size={18} />
-            </Link>
-            <Link className="button quiet" href="/games">
-              실험실 둘러보기
-            </Link>
-          </div>
-          <div className="hero-caption">
-            <ShieldCheck size={15} />
-            가입 없이 바로 · 나만의 속도로 · 무료 플레이
-          </div>
+          <Link
+            className="button primary home-start"
+            aria-disabled={loading || error}
+            href={
+              loading || error
+                ? "/games"
+                : `/games/${recentGame}/play?stage=${stage}&mode=${mode}`
+            }
+          >
+            {attempts.length ? `${game.name} 이어하기` : "첫 게임 시작하기"}
+            <ArrowRight size={21} />
+          </Link>
+          <span className="hero-caption">
+            {mode === "practice" ? "자유 연습" : `스테이지 ${stage}`} · 5문항 ·
+            힌트 사용 가능{!user && " · 가입 없이 바로"}
+          </span>
         </div>
-        <HeroArt />
+        <MemoryIllustration />
       </section>
       {error && <StorageWarning />}
-      <div className="stats-strip">
-        <div>
-          <span className="stat-icon mint">
-            <Target />
-          </span>
-          <span>
-            <small>완료한 스테이지</small>
-            <strong>
-              {loading ? "—" : passes}
-              <i>개</i>
-            </strong>
-          </span>
+      <ol className="learning-path" aria-label="게임과 학습 순서">
+        <li>
+          <span>1</span>
+          <strong>방법 익히기</strong>
+        </li>
+        <li>
+          <span>2</span>게임 도전
+        </li>
+        <li>
+          <span>3</span>해설로 돌아보기
+        </li>
+      </ol>
+      <section className="home-games" aria-labelledby="home-games-title">
+        <div className="section-heading">
+          <h2 id="home-games-title">다른 기억도 깨워볼까요?</h2>
+          <Link className="text-link" href="/games">
+            게임 모두 보기 <ArrowRight size={17} />
+          </Link>
         </div>
-        <div>
-          <span className="stat-icon purple">
-            <Trophy />
-          </span>
-          <span>
-            <small>
-              {completed.length
-                ? games.find((g) => g.id === attemptGame(completed[0]))?.name
-                : "최근 도전"}{" "}
-              기록
-            </small>
-            <strong>
-              {loading || best === null ? "—" : best.toLocaleString()}
-              <i>점</i>
-            </strong>
-          </span>
+        <div className="game-grid">
+          {games
+            .filter((g) => g.available)
+            .map((g) => (
+              <GameCard
+                compact
+                key={g.id}
+                game={g}
+                completed={completedStages(attempts, g.id)}
+              />
+            ))}
         </div>
-        <div>
-          <span className="stat-icon amber">
-            <Flame />
-          </span>
-          <span>
-            <small>쌓아온 도전</small>
-            <strong>
-              {loading ? "—" : completed.length}
-              <i>회</i>
-            </strong>
-          </span>
-        </div>
-      </div>
-      <GameLibrary compact />
-      <section className="learning-banner">
-        <span className="learning-symbol">
-          <Orbit size={34} />
-        </span>
-        <div>
-          <span className="eyebrow">MORE THAN A GAME</span>
-          <h2>정답 다음에, 배움이 시작됩니다.</h2>
-          <p>
-            결과를 확인하고, 해설에서 전략을 배우고, 새로운 문제에 적용해
-            보세요.
-          </p>
-        </div>
-        <Link href="/games/pattern" className="button secondary">
-          기억 전략 만나보기
-          <ArrowRight size={16} />
-        </Link>
       </section>
-      <p className="fine-print">
-        플레이 기록은 게임 안에서의 수행을 보여줍니다. 지능이나 인지 건강을
-        진단하는 지표가 아닙니다.
-      </p>
+      <div className="home-foot">
+        <p>
+          기억 · 추론 · 논리 · 주의
+          <br className="mobile-only" /> 다양한 생각의 연습을 준비하고 있어요.
+        </p>
+        <Link href="/records" className="text-link">
+          내 기록 돌아보기 <ArrowRight size={17} />
+        </Link>
+      </div>
     </>
   );
 }
@@ -300,7 +284,7 @@ export function GameDetail({ id }: { id: string }) {
     <>
       <Link href="/games" className="back-link">
         <ChevronLeft size={17} />
-        실험실 목록
+        게임 목록
       </Link>
       <section className={`detail-hero ${game.color}`}>
         <div>
@@ -443,7 +427,9 @@ export function GameDetail({ id }: { id: string }) {
         <div className="empty-state">
           <Icon size={40} />
           <h2>새로운 도전을 준비하고 있어요.</h2>
-          <p>지금은 패턴 복원에서 위치를 기억하는 전략을 만나보세요.</p>
+          <p>
+            지금은 패턴 복원과 시퀀스 기억으로 기억하는 방법을 연습해 보세요.
+          </p>
           <Link href="/games/pattern" className="button primary">
             패턴 복원 만나보기 <ArrowRight size={16} />
           </Link>
@@ -453,6 +439,7 @@ export function GameDetail({ id }: { id: string }) {
   );
 }
 export function Records() {
+  const { user } = useAccount();
   const { attempts, loading, error } = useAttempts();
   const rows = attempts.filter((a) => a.phase === "result");
   return (
@@ -463,8 +450,10 @@ export function Records() {
         <p>같은 조건의 도전을 돌아보고, 다음 발견을 준비하세요.</p>
       </div>
       <p className="notice">
-        <ShieldCheck size={18} />이 브라우저에 저장된 게스트 기록입니다.
-        브라우저 데이터를 삭제하면 기록도 사라집니다.
+        <ShieldCheck size={18} />
+        {user
+          ? "계정의 개인 학습 기록입니다. 공식 순위에는 사용되지 않습니다."
+          : "이 브라우저에 저장된 게스트 기록입니다. 브라우저 데이터를 삭제하면 기록도 사라집니다."}
       </p>
       {error ? (
         <StorageWarning />
@@ -548,7 +537,7 @@ export function Challenges() {
         <span className="coming-badge">준비 중</span>
         <h2>공식 챌린지는 아직 열리지 않았어요.</h2>
         <p>
-          계정과 공정한 기록 검증을 준비하고 있습니다.
+          모두가 같은 조건에서 도전할 수 있도록 준비하고 있어요.
           <br />
           지금은 개인 스테이지에서 나만의 전략을 익혀 보세요.
         </p>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Shell } from "@/components/shell";
 import "./globals.css";
+import { AccountProvider } from "@/components/account-provider";
 export const metadata: Metadata = {
   title: {
     default: "브레인 랩 | 나를 발견하는 두뇌 연구소",
@@ -17,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="ko" data-scroll-behavior="smooth">
       <body>
-        <Shell>{children}</Shell>
+        <AccountProvider>
+          <Shell>{children}</Shell>
+        </AccountProvider>
       </body>
     </html>
   );

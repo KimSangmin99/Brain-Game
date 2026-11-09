@@ -1,17 +1,19 @@
 # 기술·데이터·인터페이스 설계
 
-상태: v0.2 구현 기준안. 기술 선택은 개인+AI 운영을 고려한 제안이며 설치·외부 계정 생성·호스팅 계약은 수행하지 않았다.
+상태: v0.3 구현 기준안. 사용자가 Vercel + Supabase 구성을 선택했다. 구현 현황은 [개발 진행 기록](../development-status.md), 실제 연결 절차는 [배포 안내](../deployment.md)를 따른다. 아래 전체 설계가 모두 구현된 것은 아니다.
 
 ## 1. 구성
 
 - 웹·서버: TypeScript, Next.js 16 계열 App Router, React 19 계열, Node.js 24 LTS. 정확한 호환 패치 버전은 구현 착수 시 확인하고 잠금 파일에 고정.
 - UI: DOM·SVG 기반 게임 보드, CSS 기반 반응형. 접근 가능한 버튼·키보드 조작을 기본으로 한다. 무거운 게임 엔진은 초기 구성에 필요하지 않다.
-- 데이터: PostgreSQL 17, Drizzle ORM 및 마이그레이션. 단일 DB의 트랜잭션·제약으로 중복 응시와 저장을 통제.
+- 데이터: Supabase 관리형 PostgreSQL, Drizzle ORM 및 마이그레이션. 실제 프로젝트의 PostgreSQL 버전은 연결 시 확인한다. 앱 데이터는 전용 `app_private` 스키마에 두고 단일 DB의 트랜잭션·제약으로 중복 응시와 저장을 통제.
 - 게스트: IndexedDB. 사용자 기본 설정만 localStorage. 비밀번호·인증 세션은 브라우저 저장소에 보관하지 않음.
-- 인증: 서버의 Argon2id 비밀번호 해시와 DB 기반 불투명 세션. 성숙한 검증 라이브러리 사용, 암호 알고리즘 직접 구현 금지.
-- 메일: provider 인터페이스+DB outbox. 로컬은 메일 수집기로 검증, 운영 메일 사업자는 배포 단계 선택. 비동기 워커가 재시도·완료·만료 관리.
-- 테스트: Vitest로 판정·점수·병합, 실제 PostgreSQL 연동 테스트, Playwright로 이용 흐름·기기 검증. 테스트 작성·실행은 구현 단계에 수행.
-- 배포 단위: 웹 프로세스, 워커 프로세스, PostgreSQL. 로컬 준비는 구현 단계에서 문서화. 스케줄 작업은 주간 대회 개폐·보관 만료·삭제·메일 재시도 처리.
+- 인증: ID·비밀번호를 받는 자체 인증으로 설계한다. Supabase Auth를 도입하거나 가짜 이메일을 만들지 않는다. 서버의 Argon2id 비밀번호 해시와 DB 기반 불투명 세션을 사용한다. 성숙한 검증 라이브러리 사용, 암호 알고리즘 직접 구현 금지.
+- 메일: provider 인터페이스+DB outbox. 로컬은 메일 수집기로 검증, 운영 메일 사업자는 배포 단계 선택. 인증된 예약 작업이 제한된 묶음을 처리하고 DB lease·발송 ID로 중복 실행과 재시도를 통제한다.
+- 테스트: Vitest로 판정·점수·병합, PGlite로 SQL 마이그레이션·제약 검증, 실제 Supabase에서 연결·권한·TLS·풀러 통합 검증, Playwright로 이용 흐름·기기 검증. 로컬 DB 테스트는 실제 Supabase 연결 검증을 대체하지 않는다.
+- 배포: Vercel의 Next.js 및 Node.js 서버 함수와 Supabase PostgreSQL. 상주 워커 대신 인증된 Cron/큐 작업을 사용한다. 주간 대회 개폐·보관 만료·삭제·메일 재시도는 실행 시간 상한 안에서 처리하고 진행 상태를 DB에 보존한다. 예약 주기·제한은 선택한 요금제에서 확인한다. 현재 예약 작업 엔드포인트는 구현 전이다.
+- DB 연결: Vercel 런타임은 Supabase 트랜잭션 풀러와 `prepare: false`, 인스턴스당 최대 연결 1개를 기본으로 한다. 마이그레이션은 직접 연결 또는 세션 풀러를 사용한다. TLS 인증서를 검증하고 필요 시 공급자의 CA를 설정한다.
+- 운영 구분: Preview와 Production의 DB 자격 증명을 분리한다. 마이그레이션은 검토 후 별도 명령으로 적용하며 Vercel 빌드 중 실행하지 않는다. 함수와 DB의 리전은 실제 프로젝트 확인 후 가까운 위치로 선택한다.
 
 유료 계약이 없는 로컬 환경에서 핵심 구현이 가능하다. 운영 호스팅·도메인·메일 인증을 개발 완료로 오인하지 않는다.
 
@@ -26,6 +28,8 @@
 ## 3. 데이터 모델
 
 ID는 UUID, 시간은 UTC timestamp, 점수·시도 수는 정수. 아래 관계와 유일성은 DB 제약으로 구현한다.
+
+현재 첫 마이그레이션은 users, auth_sessions, action_tokens, attempts, progress, merge_receipts, challenge_events, official_entries, email_outbox의 9개 기반 테이블을 제공한다. 확인된 이메일과 확인 시각은 우선 users에 저장한다. 아래 모델의 콘텐츠 관리·문항 이벤트·요청키·감사·삭제 처리 등은 후속 마이그레이션으로 확장한다. 테이블 존재만으로 회원·동기화·경쟁 기능의 구현 완료를 의미하지 않는다.
 
 | 테이블 | 핵심 데이터·제약 |
 | --- | --- |
@@ -107,7 +111,8 @@ hint level=solution 요청은 revealed를 남긴다. 다음 새 문제 선택은
 - 콘텐츠 JSON과 이벤트 길이·배열·좌표·열거값 범위 검증. 기본 본문256KB, 기록 import1MB·1000건 상한.
 - 운영 로그는 requestId·상태·지연·게임 ID를 중심으로 작성. 인증 요청 본문, 원시 이메일·토큰·비밀번호 로그 제외.
 - 학습 모드 오프라인 지원은 다운로드된 문제 묶음에 한정. 회원의 오프라인 결과는 재연결 시 imported/unverified로 구분, 공식 참가 불가.
-- 운영 비밀값은 환경 설정으로 주입한다. 필요한 이름은 DATABASE_URL, SESSION_SECRET, EMAIL_PROVIDER_KEY, EMAIL_FROM, APP_ORIGIN. 현재 값 수집·설정은 하지 않았음.
+- 운영 비밀값은 환경 설정으로 주입하며 `NEXT_PUBLIC_` 접두사를 사용하지 않는다. 현재 DB 런타임은 DATABASE_URL, 마이그레이션 실행기는 DIRECT_DATABASE_URL, 선택 CA는 DATABASE_CA_CERT를 사용한다. 추후 예약 작업은 CRON_SECRET, 인증·메일 기능은 해당 구현에 맞춘 별도 설정을 추가한다. 관리 API용 SUPABASE_ACCESS_TOKEN·VERCEL_TOKEN은 연결 설정 작업용으로 웹 런타임에 필요하지 않다.
+- app_private는 Supabase Data API 노출 스키마에 추가하지 않는다. 모든 현재 테이블에 RLS를 켜고 anon·authenticated·PUBLIC 접근을 회수한다. 자체 세션을 사용하는 서버는 매 요청 소유권을 검증해야 한다. 서버 DB 역할의 권한을 검증하며 RLS만으로 서버 권한 검증을 대체하지 않는다.
 - 운영자 인증은 별도 보호와 강한 인증을 요구한다. 회원용 ID·비밀번호 정책과 운영자 접근 수준을 동일하게 가정하지 않는다.
 
 ## 7. 배포 전 확인

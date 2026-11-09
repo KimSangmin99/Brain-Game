@@ -1,0 +1,20 @@
+import { defineConfig } from "@playwright/test";
+export default defineConfig({
+  testDir: "./e2e",
+  fullyParallel: false,
+  retries: 0,
+  use: {
+    baseURL: "http://127.0.0.1:3000",
+    trace: "retain-on-failure",
+    launchOptions: {
+      executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
+      args: ["--no-sandbox"],
+    },
+  },
+  webServer: {
+    command: "npm run dev",
+    url: "http://127.0.0.1:3000",
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000,
+  },
+});

@@ -2825,3 +2825,324 @@ svg {
     font-size: 28px;
   }
 }
+
+/* Arrangement puzzles keep the numbered row beside the conditions on wide screens. */
+.arrangement-experiment {
+  text-align: left;
+}
+.arrangement-experiment > h1,
+.arrangement-experiment > .experiment-subtitle {
+  text-align: center;
+}
+.arrangement-intro {
+  max-width: 760px;
+  margin: 30px auto;
+  text-align: center;
+}
+.arrangement-preview {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 30px 0;
+}
+.arrangement-preview > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  width: 70px;
+  min-height: 90px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--blue);
+}
+.arrangement-preview small {
+  color: var(--muted);
+  font-size: var(--small-size);
+}
+.arrangement-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 32px;
+  align-items: start;
+  margin-top: 32px;
+}
+.arrangement-workspace h2 {
+  font-size: 24px;
+  margin-top: 0;
+  line-height: 1.5;
+}
+.arrangement-clues h2 > span {
+  font-size: var(--small-size);
+  color: var(--muted);
+  font-weight: 400;
+}
+.arrangement-clues ol {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+.arrangement-clues li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.arrangement-clue-number {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  min-height: 28px;
+  border-radius: 50%;
+  background: #eaf0f4;
+  color: var(--blue);
+  font-size: 16px;
+}
+.arrangement-clues li strong {
+  font-weight: 600;
+}
+.arrangement-clues li p {
+  font-size: var(--small-size);
+  color: var(--muted);
+  margin: 8px 0 0;
+}
+.arrangement-clues li.highlighted {
+  background: #f7f1db;
+  padding-inline: 12px;
+  border-radius: 10px;
+}
+.arrangement-condition-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--mint);
+  font-weight: 700;
+  font-size: var(--small-size);
+}
+.arrangement-clues .violated .arrangement-condition-status {
+  color: var(--error);
+}
+.arrangement-clues .violated {
+  border-bottom-color: #c69b8f;
+}
+.arrangement-board-panel {
+  min-width: 0;
+  position: sticky;
+  top: 16px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: 16px;
+}
+.arrangement-palette {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.arrangement-palette button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 104px;
+  padding: 10px 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.arrangement-palette button.selected {
+  outline: 3px solid var(--blue);
+  outline-offset: 1px;
+  background: #eaf0f4;
+}
+.arrangement-palette button small {
+  color: var(--muted);
+  font-size: var(--small-size);
+}
+.arrangement-avatar {
+  display: block;
+  font-size: 27px;
+  line-height: 1.2;
+  color: var(--blue);
+}
+.arrangement-avatar.avatar-0,
+.arrangement-avatar.avatar-4 {
+  color: #355b43;
+}
+.arrangement-avatar.avatar-1 {
+  color: #785334;
+}
+.arrangement-avatar.avatar-3 {
+  color: #75516c;
+}
+.arrangement-avatar.avatar-5 {
+  color: #395f6c;
+}
+.arrangement-selection {
+  min-height: 3.4em;
+  font-size: var(--small-size);
+  margin: 20px 0 10px;
+}
+.arrangement-slot-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 0 10px;
+  color: var(--blue);
+  font-size: var(--small-size);
+}
+.arrangement-slot-heading svg {
+  flex: 1;
+}
+.arrangement-slots {
+  display: grid;
+  gap: 6px;
+}
+.arrangement-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-width: 44px;
+  min-height: 124px;
+  padding: 10px 2px;
+  border: 1px solid #8a9aab;
+  border-radius: 12px;
+  background: var(--panel);
+}
+.arrangement-slot.empty {
+  border-style: dashed;
+}
+.arrangement-slot > small {
+  color: var(--muted);
+  font-size: var(--small-size);
+}
+.arrangement-slot > span:last-child {
+  font-size: var(--small-size);
+}
+.arrangement-empty-mark {
+  margin: auto;
+  color: var(--muted);
+  font-size: 25px !important;
+}
+.arrangement-end-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  margin-top: 32px;
+}
+.arrangement-end-options details {
+  max-width: 520px;
+}
+.arrangement-end-options summary {
+  min-height: 48px;
+  cursor: pointer;
+  padding: 10px 0;
+}
+.arrangement-review {
+  max-width: 850px;
+  margin: 30px auto;
+}
+.arrangement-solution {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 24px 0;
+}
+.arrangement-solution > span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 2px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+}
+.arrangement-solution small {
+  font-size: var(--small-size);
+  color: var(--muted);
+}
+.arrangement-review > ol {
+  padding-left: 24px;
+}
+.arrangement-review > ol li {
+  padding: 8px 0;
+}
+@media (max-width: 1000px) {
+  .arrangement-workspace {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .arrangement-board-panel {
+    position: static;
+  }
+}
+@media (max-width: 760px) {
+  .arrangement-experiment {
+    padding: 23px 12px;
+  }
+  .arrangement-preview {
+    gap: 4px;
+  }
+  .arrangement-preview > span {
+    width: 44px;
+  }
+  .arrangement-preview small {
+    font-size: 13px;
+  }
+  .arrangement-board-panel {
+    padding: 16px 0;
+    background: transparent;
+    border: 0;
+  }
+  .arrangement-slots {
+    gap: 4px;
+  }
+  .arrangement-slot {
+    min-height: 116px;
+    padding-inline: 1px;
+  }
+  .arrangement-slot > small {
+    font-size: 14px;
+  }
+  .arrangement-slot > span:last-child {
+    font-size: 16px;
+  }
+  .arrangement-palette {
+    gap: 8px;
+  }
+  .arrangement-palette small {
+    font-size: 14px;
+  }
+  .arrangement-solution {
+    gap: 4px;
+  }
+  .arrangement-solution small {
+    font-size: 14px;
+  }
+  .arrangement-solution > span > span:last-child {
+    font-size: 16px;
+  }
+  .large-type .arrangement-slot > small,
+  .large-type .arrangement-slot > span:last-child,
+  .large-type .arrangement-palette small,
+  .large-type .arrangement-solution > span > span:last-child {
+    font-size: 18px;
+  }
+  .arrangement-end-options {
+    flex-direction: column;
+  }
+}

@@ -3,6 +3,7 @@ import { attemptSchema } from "../lib/pattern";
 import { sequenceSchema } from "../lib/sequence";
 import { ruleSchema } from "../lib/rule";
 import { codeSchema } from "../lib/code";
+import { arrangementSchema } from "../lib/arrangement";
 export const loginIdSchema = z
   .string()
   .max(100)
@@ -40,12 +41,19 @@ export const registerSchema = loginSchema.extend({
   ),
 });
 export const completedSchema = z
-  .union([attemptSchema, sequenceSchema, ruleSchema, codeSchema])
+  .union([
+    attemptSchema,
+    sequenceSchema,
+    ruleSchema,
+    codeSchema,
+    arrangementSchema,
+  ])
   .superRefine((a, ctx) => {
     if (
       !z.uuid().safeParse(a.id).success ||
       a.phase !== "result" ||
-      a.answers.length !== (a.version === "code-v1" ? 1 : 5) ||
+      a.answers.length !==
+        (["code-v1", "arrangement-v1"].includes(a.version) ? 1 : 5) ||
       !Number.isSafeInteger(a.createdAt) ||
       !Number.isSafeInteger(a.updatedAt) ||
       a.createdAt < 0 ||

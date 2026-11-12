@@ -52,7 +52,7 @@ export const games = [
     icon: "blocks",
     tagline: "조건을 연결해 모두의 자리를 찾으세요.",
     strategy: "위치가 확정된 대상부터 배치해 보세요.",
-    available: false,
+    available: true,
   },
   {
     id: "route",

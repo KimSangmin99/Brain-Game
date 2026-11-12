@@ -1,4 +1,5 @@
 import { codeOutcome, type CodeAttempt } from "./code";
+import { arrangementOutcome, type ArrangementAttempt } from "./arrangement";
 export interface MemoryResultState {
   version?: "pattern-v1" | "sequence-v1" | "rule-v1";
   stage: number;
@@ -8,7 +9,10 @@ export interface MemoryResultState {
   interrupted: boolean;
   answers: readonly { correct: boolean }[];
 }
-export function outcome(state: MemoryResultState | CodeAttempt) {
+export function outcome(
+  state: MemoryResultState | CodeAttempt | ArrangementAttempt,
+) {
+  if (state.version === "arrangement-v1") return arrangementOutcome(state);
   if (state.version === "code-v1") return codeOutcome(state);
   const correct = state.answers.filter((a) => a.correct).length;
   const passed = state.phase === "result" && correct >= 4;
@@ -21,7 +25,7 @@ export function outcome(state: MemoryResultState | CodeAttempt) {
 }
 // Call with only one game's records: progress is always game-specific.
 export function nextStage(
-  attempts: readonly (MemoryResultState | CodeAttempt)[],
+  attempts: readonly (MemoryResultState | CodeAttempt | ArrangementAttempt)[],
 ) {
   const passed = new Set(
     attempts

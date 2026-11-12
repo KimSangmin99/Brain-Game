@@ -144,7 +144,7 @@ test("desktop laboratory has functional category filters", async ({ page }) => {
   await expect(page.locator(".game-card")).toHaveCount(8);
   await page.getByRole("button", { name: "논리", exact: true }).click();
   await expect(page.locator(".game-card")).toHaveCount(2);
-  await page.getByRole("link", { name: /조건 배열/ }).click();
+  await page.getByRole("link", { name: /경로 설계/ }).click();
   await expect(page.getByText("이 실험실은 준비 중입니다")).toBeVisible();
 });
 test("storage failure gives an honest error instead of a saved state", async ({

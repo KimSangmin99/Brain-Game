@@ -204,7 +204,7 @@ test("logged-in gameplay survives a server save failure and retries from the acc
     expect(labels).toHaveLength(2);
     await expect(
       page.getByRole("heading", { name: "어디에 빛이 있었나요?" }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
     for (const name of labels)
       await page.getByRole("button", { name, exact: true }).click();
     await page

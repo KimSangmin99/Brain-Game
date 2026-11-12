@@ -5,11 +5,13 @@ import { ruleSchema, type RuleAttempt } from "./rule";
 import { z } from "zod";
 import { attemptGame, type MemoryAttempt } from "./memory-types";
 import { codeSchema, type CodeAttempt } from "./code";
+import { arrangementSchema, type ArrangementAttempt } from "./arrangement";
 const savedAttemptSchema = z.union([
   attemptSchema,
   sequenceSchema,
   ruleSchema,
   codeSchema,
+  arrangementSchema,
 ]);
 
 interface BrainDB extends DBSchema {
@@ -82,8 +84,11 @@ export function readAttempts(game: "pattern"): Promise<Attempt[]>;
 export function readAttempts(game: "sequence"): Promise<SequenceAttempt[]>;
 export function readAttempts(game: "rule"): Promise<RuleAttempt[]>;
 export function readAttempts(game: "code"): Promise<CodeAttempt[]>;
+export function readAttempts(
+  game: "arrangement",
+): Promise<ArrangementAttempt[]>;
 export async function readAttempts(
-  game: "pattern" | "sequence" | "rule" | "code" = "pattern",
+  game: "pattern" | "sequence" | "rule" | "code" | "arrangement" = "pattern",
 ) {
   return (await readAllAttempts()).filter((a) => attemptGame(a) === game);
 }

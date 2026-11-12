@@ -58,3 +58,22 @@ export const codeEngine: MemoryEngine<CodeAttempt, CodeAction> = {
   recover: recoverCode,
   reduce: reduceCode,
 };
+
+import {
+  makeArrangementAttempt,
+  recoverArrangement,
+  reduceArrangement,
+  type ArrangementAttempt,
+  type ArrangementAction,
+} from "./arrangement";
+export const arrangementEngine: MemoryEngine<
+  ArrangementAttempt,
+  ArrangementAction
+> = {
+  game: "arrangement",
+  isAttempt: (a): a is ArrangementAttempt => a.version === "arrangement-v1",
+  make: makeArrangementAttempt,
+  remake: (a) => makeArrangementAttempt(a.stage, a.mode, [a.question.id]),
+  recover: recoverArrangement,
+  reduce: reduceArrangement,
+};

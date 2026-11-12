@@ -117,7 +117,11 @@ export function useMemorySession<
   };
   const restart = () => {
     setSaved(-1);
-    setAttempt(engine.make(stage, mode));
+    setAttempt((previous) =>
+      previous && engine.remake
+        ? engine.remake(previous)
+        : engine.make(stage, mode),
+    );
   };
   return {
     attempt,

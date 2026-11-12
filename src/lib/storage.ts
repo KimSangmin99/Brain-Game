@@ -1,9 +1,16 @@
 import { openDB, type DBSchema } from "idb";
 import { attemptSchema, type Attempt } from "./pattern";
 import { sequenceSchema, type SequenceAttempt } from "./sequence";
+import { ruleSchema, type RuleAttempt } from "./rule";
 import { z } from "zod";
 import { attemptGame, type MemoryAttempt } from "./memory-types";
-const savedAttemptSchema = z.union([attemptSchema, sequenceSchema]);
+import { codeSchema, type CodeAttempt } from "./code";
+const savedAttemptSchema = z.union([
+  attemptSchema,
+  sequenceSchema,
+  ruleSchema,
+  codeSchema,
+]);
 
 interface BrainDB extends DBSchema {
   attempts: { key: string; value: MemoryAttempt };
@@ -73,7 +80,11 @@ export async function saveAttempt(
 export function readAttempts(): Promise<Attempt[]>;
 export function readAttempts(game: "pattern"): Promise<Attempt[]>;
 export function readAttempts(game: "sequence"): Promise<SequenceAttempt[]>;
-export async function readAttempts(game: "pattern" | "sequence" = "pattern") {
+export function readAttempts(game: "rule"): Promise<RuleAttempt[]>;
+export function readAttempts(game: "code"): Promise<CodeAttempt[]>;
+export async function readAttempts(
+  game: "pattern" | "sequence" | "rule" | "code" = "pattern",
+) {
   return (await readAllAttempts()).filter((a) => attemptGame(a) === game);
 }
 

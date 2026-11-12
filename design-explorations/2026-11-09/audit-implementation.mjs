@@ -3,7 +3,7 @@ import { chromium } from '@playwright/test';
 import fs from 'node:fs';
 const base=process.env.DESIGN_A_BASE_URL || 'http://localhost:3100';
 const folder=new URL('./implemented/',import.meta.url);fs.mkdirSync(folder,{recursive:true});
-const routes={home:'/',games:'/games',pattern:'/games/pattern',sequence:'/games/sequence',upcoming:'/games/rule',patternIntro:'/games/pattern/play?stage=1',sequenceIntro:'/games/sequence/play?stage=1',records:'/records',account:'/account',login:'/login',register:'/register',guide:'/account/guide',challenges:'/challenges',notFound:'/not-a-page'};
+const routes={home:'/',games:'/games',pattern:'/games/pattern',sequence:'/games/sequence',upcoming:'/games/arrangement',patternIntro:'/games/pattern/play?stage=1',sequenceIntro:'/games/sequence/play?stage=1',records:'/records',account:'/account',login:'/login',register:'/register',guide:'/account/guide',challenges:'/challenges',notFound:'/not-a-page'};
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
 const results=[];
 async function inspect(page,name,width){

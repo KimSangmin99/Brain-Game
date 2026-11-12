@@ -29,8 +29,8 @@ export const games = [
     color: "purple",
     icon: "orbit",
     tagline: "변화 속에 숨은 규칙을 발견하세요.",
-    strategy: "색, 방향, 개수를 하나씩 따로 관찰해 보세요.",
-    available: false,
+    strategy: "방향·개수·표식을 하나씩 따로 관찰해 보세요.",
+    available: true,
   },
   {
     id: "code",
@@ -41,7 +41,7 @@ export const games = [
     icon: "key",
     tagline: "작은 단서로 미지의 코드를 해독하세요.",
     strategy: "새 추측이 이전 단서와 맞는지 확인해 보세요.",
-    available: false,
+    available: true,
   },
   {
     id: "arrangement",

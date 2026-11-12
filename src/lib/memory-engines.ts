@@ -27,3 +27,34 @@ export const sequenceEngine: MemoryEngine<SequenceAttempt, SequenceAction> = {
   recover: recoverSequence,
   reduce: reduceSequence,
 };
+
+import {
+  makeRuleAttempt,
+  recoverRule,
+  reduceRule,
+  type RuleAttempt,
+  type RuleAction,
+} from "./rule";
+export const ruleEngine: MemoryEngine<RuleAttempt, RuleAction> = {
+  game: "rule",
+  isAttempt: (a): a is RuleAttempt => a.version === "rule-v1",
+  make: makeRuleAttempt,
+  recover: recoverRule,
+  reduce: reduceRule,
+};
+
+import {
+  makeCodeAttempt,
+  recoverCode,
+  reduceCode,
+  type CodeAttempt,
+  type CodeAction,
+} from "./code";
+export const codeEngine: MemoryEngine<CodeAttempt, CodeAction> = {
+  game: "code",
+  isAttempt: (a): a is CodeAttempt => a.version === "code-v1",
+  make: makeCodeAttempt,
+  remake: (a) => makeCodeAttempt(a.stage, a.mode, [a.secret]),
+  recover: recoverCode,
+  reduce: reduceCode,
+};

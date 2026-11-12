@@ -26,6 +26,8 @@ import { games, type Game } from "@/lib/catalog";
 import { configFor } from "@/lib/pattern";
 import { nextStage, outcome } from "@/lib/memory-common";
 import { sequenceConfig } from "@/lib/sequence";
+import { ruleConfig } from "@/lib/rule-content";
+import { codeConfig } from "@/lib/code-rules";
 import { attemptGame, type MemoryAttempt } from "@/lib/memory-types";
 import { useAccount } from "./account-provider";
 export const icons = {
@@ -96,7 +98,7 @@ function GameCard({
         <h3>{game.name}</h3>
         <p>
           {compact
-            ? `${game.id === "pattern" ? "빛의 위치를 기억해요" : "나타난 순서를 기억해요"} · ${completed}/30단계`
+            ? `${game.id === "pattern" ? "빛의 위치를 기억해요" : game.id === "code" ? "단서로 코드를 좁혀요" : game.id === "rule" ? "변화의 규칙을 찾아요" : "나타난 순서를 기억해요"} · ${completed}/30단계`
             : game.tagline}
         </p>
         {game.available && !compact && (
@@ -126,8 +128,9 @@ export function GameLibrary() {
         <div>
           <h2>원하는 게임을 골라보세요</h2>
           <p className="muted">
-            지금은 기억 게임 2종을 플레이할 수 있어요. 나머지 6종은 준비
-            중입니다.
+            지금은 기억·추론 게임 {games.filter((g) => g.available).length}종을
+            플레이할 수 있어요. 나머지{" "}
+            {games.filter((g) => !g.available).length}종은 준비 중입니다.
           </p>
         </div>
       </div>
@@ -170,9 +173,10 @@ export function Home() {
   const active = own.find((a) => a.phase !== "result");
   const stage = active?.stage ?? nextStage(own);
   const mode = active?.mode ?? "stage";
-  const passes =
-    completedStages(attempts, "pattern") +
-    completedStages(attempts, "sequence");
+  const passes = games.reduce(
+    (sum, game) => sum + completedStages(attempts, game.id),
+    0,
+  );
   return (
     <>
       <div className="welcome-line">
@@ -217,8 +221,11 @@ export function Home() {
             <ArrowRight size={21} />
           </Link>
           <span className="hero-caption">
-            {mode === "practice" ? "자유 연습" : `스테이지 ${stage}`} · 5문항 ·
-            힌트 사용 가능{!user && " · 가입 없이 바로"}
+            {mode === "practice" ? "자유 연습" : `스테이지 ${stage}`} ·{" "}
+            {recentGame === "code"
+              ? `코드 1개 · 최대 ${codeConfig(stage).maxGuesses}회 추측`
+              : "5문항"}{" "}
+            · 힌트 사용 가능{!user && " · 가입 없이 바로"}
           </span>
         </div>
         <MemoryIllustration />
@@ -238,14 +245,15 @@ export function Home() {
       </ol>
       <section className="home-games" aria-labelledby="home-games-title">
         <div className="section-heading">
-          <h2 id="home-games-title">다른 기억도 깨워볼까요?</h2>
+          <h2 id="home-games-title">다른 생각도 깨워볼까요?</h2>
           <Link className="text-link" href="/games">
             게임 모두 보기 <ArrowRight size={17} />
           </Link>
         </div>
         <div className="game-grid">
           {games
-            .filter((g) => g.available)
+            .filter((g) => g.available && g.id !== recentGame)
+            .slice(0, 2)
             .map((g) => (
               <GameCard
                 compact
@@ -365,14 +373,22 @@ export function GameDetail({ id }: { id: string }) {
                       {String(stage).padStart(2, "0")}
                     </span>
                     <h3>
-                      {id === "sequence"
-                        ? sequenceConfig(stage).goal
-                        : configFor(stage).goal}
+                      {id === "code"
+                        ? codeConfig(stage).goal
+                        : id === "rule"
+                          ? ruleConfig(stage).goal
+                          : id === "sequence"
+                            ? sequenceConfig(stage).goal
+                            : configFor(stage).goal}
                     </h3>
                     <p>
-                      {id === "sequence"
-                        ? `${sequenceConfig(stage).choices}종 도형 · ${sequenceConfig(stage).length}개 순서`
-                        : `${configFor(stage).size}×${configFor(stage).size} 격자 · ${configFor(stage).count}개 위치`}
+                      {id === "code"
+                        ? `${codeConfig(stage).length}자리 · 기호 ${codeConfig(stage).choices}종 · ${codeConfig(stage).repeats ? "중복 허용" : "중복 없음"}`
+                        : id === "rule"
+                          ? `${ruleConfig(stage).label} · 4지선다`
+                          : id === "sequence"
+                            ? `${sequenceConfig(stage).choices}종 도형 · ${sequenceConfig(stage).length}개 순서`
+                            : `${configFor(stage).size}×${configFor(stage).size} 격자 · ${configFor(stage).count}개 위치`}
                     </p>
                     {locked ? (
                       <span className="stage-state">
@@ -427,9 +443,7 @@ export function GameDetail({ id }: { id: string }) {
         <div className="empty-state">
           <Icon size={40} />
           <h2>새로운 도전을 준비하고 있어요.</h2>
-          <p>
-            지금은 패턴 복원과 시퀀스 기억으로 기억하는 방법을 연습해 보세요.
-          </p>
+          <p>지금은 기억·추론 게임에서 생각하는 방법을 연습해 보세요.</p>
           <Link href="/games/pattern" className="button primary">
             패턴 복원 만나보기 <ArrowRight size={16} />
           </Link>
@@ -479,7 +493,7 @@ export function Records() {
             const RecordIcon = icons[recordGame.icon];
             return (
               <article className="record-card" key={a.id}>
-                <div className="game-icon mint">
+                <div className={`game-icon ${recordGame.color}`}>
                   <RecordIcon />
                 </div>
                 <div className="record-info">
@@ -507,7 +521,11 @@ export function Records() {
                 </div>
                 <div className="record-score">
                   <strong>{r.score.toLocaleString()}</strong>
-                  <span>{r.correct}/5 정답</span>
+                  <span>
+                    {a.version === "code-v1"
+                      ? `${a.guesses.length}회 추측 · ${r.passed ? "해독 성공" : a.revealed ? "풀이 열람" : "미해독"}`
+                      : `${r.correct}/5 정답`}
+                  </span>
                 </div>
                 <Link
                   className="icon-button"

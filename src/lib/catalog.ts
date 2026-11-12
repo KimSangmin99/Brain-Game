@@ -63,7 +63,7 @@ export const games = [
     icon: "route",
     tagline: "여러 가능성 중 완성된 길을 찾아보세요.",
     strategy: "목적지와 필수 지점부터 살펴보세요.",
-    available: false,
+    available: true,
   },
   {
     id: "search",

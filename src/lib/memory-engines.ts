@@ -77,3 +77,19 @@ export const arrangementEngine: MemoryEngine<
   recover: recoverArrangement,
   reduce: reduceArrangement,
 };
+
+import {
+  makeRouteAttempt,
+  recoverRoute,
+  reduceRoute,
+  type RouteAttempt,
+  type RouteAction,
+} from "./route";
+export const routeEngine: MemoryEngine<RouteAttempt, RouteAction> = {
+  game: "route",
+  isAttempt: (a): a is RouteAttempt => a.version === "route-v1",
+  make: makeRouteAttempt,
+  remake: (a) => makeRouteAttempt(a.stage, a.mode, [a.question.id]),
+  recover: recoverRoute,
+  reduce: reduceRoute,
+};

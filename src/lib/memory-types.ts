@@ -3,20 +3,28 @@ import type { SequenceAttempt } from "./sequence";
 import type { RuleAttempt } from "./rule";
 import type { CodeAttempt } from "./code";
 import type { ArrangementAttempt } from "./arrangement";
+import type { RouteAttempt } from "./route";
 export type MemoryAttempt =
-  Attempt | SequenceAttempt | RuleAttempt | CodeAttempt | ArrangementAttempt;
+  | Attempt
+  | SequenceAttempt
+  | RuleAttempt
+  | CodeAttempt
+  | ArrangementAttempt
+  | RouteAttempt;
 export type MemoryGame =
-  "pattern" | "sequence" | "rule" | "code" | "arrangement";
+  "pattern" | "sequence" | "rule" | "code" | "arrangement" | "route";
 export function attemptGame(a: MemoryAttempt): MemoryGame {
-  return a.version === "arrangement-v1"
-    ? "arrangement"
-    : a.version === "code-v1"
-      ? "code"
-      : a.version === "rule-v1"
-        ? "rule"
-        : a.version === "sequence-v1"
-          ? "sequence"
-          : "pattern";
+  return a.version === "route-v1"
+    ? "route"
+    : a.version === "arrangement-v1"
+      ? "arrangement"
+      : a.version === "code-v1"
+        ? "code"
+        : a.version === "rule-v1"
+          ? "rule"
+          : a.version === "sequence-v1"
+            ? "sequence"
+            : "pattern";
 }
 export interface MemoryEngine<T extends MemoryAttempt, A> {
   game: MemoryGame;

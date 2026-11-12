@@ -142,9 +142,9 @@ test("desktop laboratory has functional category filters", async ({ page }) => {
   });
   await page.getByRole("link", { name: "게임 모두 보기" }).click();
   await expect(page.locator(".game-card")).toHaveCount(8);
-  await page.getByRole("button", { name: "논리", exact: true }).click();
+  await page.getByRole("button", { name: "주의·판단", exact: true }).click();
   await expect(page.locator(".game-card")).toHaveCount(2);
-  await page.getByRole("link", { name: /경로 설계/ }).click();
+  await page.getByRole("link", { name: /신호 탐색/ }).click();
   await expect(page.getByText("이 실험실은 준비 중입니다")).toBeVisible();
 });
 test("storage failure gives an honest error instead of a saved state", async ({

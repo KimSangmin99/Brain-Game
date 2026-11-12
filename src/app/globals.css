@@ -3146,3 +3146,318 @@ svg {
     flex-direction: column;
   }
 }
+
+/* Route planning: a numbered map and the conditions needed to complete it. */
+.route-experiment {
+  text-align: left;
+}
+.route-experiment > h1,
+.route-experiment > .experiment-subtitle {
+  text-align: center;
+}
+.route-intro {
+  max-width: 720px;
+  margin: 30px auto;
+}
+.route-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 30px 0;
+}
+.route-preview > span {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  border-radius: 12px;
+  font-weight: 700;
+  color: var(--blue);
+}
+.route-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  align-items: start;
+  gap: 36px;
+  margin-top: 24px;
+}
+.route-workspace h2 {
+  font-size: 24px;
+  margin-top: 0;
+}
+.route-map-panel {
+  min-width: 0;
+}
+.route-task-summary {
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #edf1e6;
+  color: var(--mint);
+  text-align: center;
+  font-weight: 700;
+}
+.route-move-count {
+  font-weight: 700;
+  text-align: center;
+  color: var(--blue);
+  margin: 6px 0 18px;
+}
+.route-board-frame {
+  max-width: 440px;
+  margin: auto;
+}
+.route-board {
+  display: grid;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f0f1e9;
+}
+.route-cell {
+  position: relative;
+  min-width: 44px;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
+  padding: 2px;
+  background: var(--panel);
+  border: 1px solid #9aab9d;
+  border-radius: 7px;
+  line-height: 1.2;
+}
+.route-cell:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.route-cell.wall {
+  background: repeating-linear-gradient(
+    45deg,
+    #d8dfd0,
+    #d8dfd0 4px,
+    #e7eadd 4px,
+    #e7eadd 8px
+  );
+  color: #596a55;
+  border-color: #a8b39f;
+}
+.route-cell.selected {
+  background: #e2ebdb;
+  border: 2px solid var(--mint);
+}
+.route-cell.current {
+  background: var(--mint);
+  color: #fffefa;
+}
+.route-cell.waypoint:not(.current) .route-marker {
+  color: var(--blue);
+  font-weight: 800;
+}
+.route-cell.hinted {
+  outline: 3px dashed #805f28;
+  outline-offset: 1px;
+  z-index: 1;
+}
+.route-marker {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  min-height: 18px;
+}
+.route-cell.wall .route-marker {
+  font-size: 25px;
+}
+.route-step {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+}
+.route-arrow {
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  font-size: 12px;
+}
+.route-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  font-size: var(--small-size);
+  margin: 12px 0;
+  color: var(--muted);
+}
+.route-legend b {
+  color: var(--blue);
+}
+.route-direction-pad {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0 12px;
+}
+.route-direction-pad button {
+  width: 50px;
+  min-height: 48px;
+  border: 1px solid #8a9aab;
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--blue);
+  font-size: 26px;
+}
+.route-input-status {
+  max-width: 520px;
+  margin: 12px auto;
+  min-height: 3.4em;
+  font-size: var(--small-size);
+}
+.route-conditions {
+  padding: 22px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.route-conditions > ul {
+  padding-left: 22px;
+  margin: 14px 0 0;
+}
+.route-conditions li {
+  padding-block: 4px;
+}
+.route-conditions ul ul {
+  padding-left: 20px;
+  font-size: var(--small-size);
+}
+.route-condition-panel .hint-box {
+  margin-top: 24px;
+}
+.route-feedback-list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+}
+.route-feedback-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--small-size);
+}
+.route-feedback-list strong {
+  display: block;
+  color: var(--mint);
+}
+.route-feedback-list .violated strong,
+.route-feedback-list .violated > svg {
+  color: var(--error);
+}
+.route-feedback-list svg {
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.route-coordinate-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 18px 0 0;
+  padding: 0 0 0 8px;
+  list-style: none;
+  font-size: var(--small-size);
+}
+.route-coordinate-list li {
+  padding: 5px 0;
+}
+.route-end-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding-top: 24px;
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.route-end-options details {
+  max-width: 520px;
+}
+.route-end-options summary {
+  cursor: pointer;
+  padding: 12px 0;
+  min-height: 48px;
+}
+.route-review > aside {
+  min-width: 0;
+}
+.route-review .filters {
+  justify-content: center;
+}
+@media (max-width: 1000px) {
+  .route-workspace {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .route-condition-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .route-condition-panel .hint-box {
+    margin-top: 0;
+  }
+}
+@media (max-width: 760px) {
+  .route-experiment {
+    padding: 23px 12px;
+  }
+  .route-board {
+    gap: 4px;
+    padding: 2px;
+  }
+  .route-cell {
+    border-radius: 5px;
+  }
+  .route-marker,
+  .route-step {
+    font-size: 14px;
+  }
+  .route-marker {
+    min-height: 16px;
+  }
+  .route-arrow {
+    font-size: 10px;
+    right: 2px;
+    bottom: 1px;
+  }
+  .route-condition-panel {
+    display: block;
+  }
+  .route-condition-panel .hint-box {
+    margin-top: 20px;
+  }
+  .route-conditions {
+    padding: 18px;
+  }
+  .route-conditions h2 {
+    font-size: 22px;
+  }
+  .route-end-options {
+    flex-direction: column;
+  }
+  .route-task-summary {
+    padding: 12px;
+    font-size: var(--small-size);
+  }
+  .large-type .route-marker,
+  .large-type .route-step {
+    font-size: 18px;
+  }
+  .large-type .route-marker {
+    min-height: 20px;
+  }
+}

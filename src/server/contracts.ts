@@ -5,6 +5,7 @@ import { ruleSchema } from "../lib/rule";
 import { codeSchema } from "../lib/code";
 import { arrangementSchema } from "../lib/arrangement";
 import { routeSchema } from "../lib/route";
+import { searchSchema } from "../lib/search";
 export const loginIdSchema = z
   .string()
   .max(100)
@@ -49,15 +50,18 @@ export const completedSchema = z
     codeSchema,
     arrangementSchema,
     routeSchema,
+    searchSchema,
   ])
   .superRefine((a, ctx) => {
     if (
       !z.uuid().safeParse(a.id).success ||
       a.phase !== "result" ||
       a.answers.length !==
-        (["code-v1", "arrangement-v1", "route-v1"].includes(a.version)
-          ? 1
-          : 5) ||
+        (a.version === "search-v1"
+          ? 3
+          : ["code-v1", "arrangement-v1", "route-v1"].includes(a.version)
+            ? 1
+            : 5) ||
       !Number.isSafeInteger(a.createdAt) ||
       !Number.isSafeInteger(a.updatedAt) ||
       a.createdAt < 0 ||

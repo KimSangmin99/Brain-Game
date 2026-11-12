@@ -74,7 +74,7 @@ export const games = [
     icon: "scan",
     tagline: "수많은 신호 속에서 목표를 포착하세요.",
     strategy: "일정한 순서로 화면을 살펴보세요.",
-    available: false,
+    available: true,
   },
   {
     id: "switch",

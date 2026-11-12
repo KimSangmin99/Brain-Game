@@ -7,6 +7,7 @@ import { attemptGame, type MemoryAttempt } from "./memory-types";
 import { codeSchema, type CodeAttempt } from "./code";
 import { arrangementSchema, type ArrangementAttempt } from "./arrangement";
 import { routeSchema, type RouteAttempt } from "./route";
+import { searchSchema, type SearchAttempt } from "./search";
 const savedAttemptSchema = z.union([
   attemptSchema,
   sequenceSchema,
@@ -14,6 +15,7 @@ const savedAttemptSchema = z.union([
   codeSchema,
   arrangementSchema,
   routeSchema,
+  searchSchema,
 ]);
 
 interface BrainDB extends DBSchema {
@@ -90,6 +92,7 @@ export function readAttempts(
   game: "arrangement",
 ): Promise<ArrangementAttempt[]>;
 export function readAttempts(game: "route"): Promise<RouteAttempt[]>;
+export function readAttempts(game: "search"): Promise<SearchAttempt[]>;
 export async function readAttempts(
   game:
     | "pattern"
@@ -97,7 +100,8 @@ export async function readAttempts(
     | "rule"
     | "code"
     | "arrangement"
-    | "route" = "pattern",
+    | "route"
+    | "search" = "pattern",
 ) {
   return (await readAllAttempts()).filter((a) => attemptGame(a) === game);
 }

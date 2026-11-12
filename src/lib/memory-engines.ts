@@ -93,3 +93,18 @@ export const routeEngine: MemoryEngine<RouteAttempt, RouteAction> = {
   recover: recoverRoute,
   reduce: reduceRoute,
 };
+
+import {
+  makeSearchAttempt,
+  recoverSearch,
+  reduceSearch,
+  type SearchAttempt,
+  type SearchAction,
+} from "./search";
+export const searchEngine: MemoryEngine<SearchAttempt, SearchAction> = {
+  game: "search",
+  isAttempt: (a): a is SearchAttempt => a.version === "search-v1",
+  make: makeSearchAttempt,
+  recover: recoverSearch,
+  reduce: reduceSearch,
+};

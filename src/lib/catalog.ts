@@ -85,7 +85,7 @@ export const games = [
     icon: "switch",
     tagline: "달라지는 규칙에 새로운 기준으로 반응하세요.",
     strategy: "반응하기 전에 현재 지시를 확인해 보세요.",
-    available: false,
+    available: true,
   },
 ] as const;
 export type Game = (typeof games)[number];

@@ -1,3 +1,4 @@
+import { switchSchema, type SwitchAttempt } from "./switch";
 import { openDB, type DBSchema } from "idb";
 import { attemptSchema, type Attempt } from "./pattern";
 import { sequenceSchema, type SequenceAttempt } from "./sequence";
@@ -16,6 +17,7 @@ const savedAttemptSchema = z.union([
   arrangementSchema,
   routeSchema,
   searchSchema,
+  switchSchema,
 ]);
 
 interface BrainDB extends DBSchema {
@@ -93,6 +95,7 @@ export function readAttempts(
 ): Promise<ArrangementAttempt[]>;
 export function readAttempts(game: "route"): Promise<RouteAttempt[]>;
 export function readAttempts(game: "search"): Promise<SearchAttempt[]>;
+export function readAttempts(game: "switch"): Promise<SwitchAttempt[]>;
 export async function readAttempts(
   game:
     | "pattern"
@@ -101,7 +104,8 @@ export async function readAttempts(
     | "code"
     | "arrangement"
     | "route"
-    | "search" = "pattern",
+    | "search"
+    | "switch" = "pattern",
 ) {
   return (await readAllAttempts()).filter((a) => attemptGame(a) === game);
 }

@@ -1,3 +1,4 @@
+import { switchOutcome, type SwitchAttempt } from "./switch";
 import { codeOutcome, type CodeAttempt } from "./code";
 import { arrangementOutcome, type ArrangementAttempt } from "./arrangement";
 import { routeOutcome, type RouteAttempt } from "./route";
@@ -17,8 +18,10 @@ export function outcome(
     | CodeAttempt
     | ArrangementAttempt
     | RouteAttempt
-    | SearchAttempt,
+    | SearchAttempt
+    | SwitchAttempt,
 ) {
+  if (state.version === "switch-v1") return switchOutcome(state);
   if (state.version === "search-v1") return searchOutcome(state);
   if (state.version === "route-v1") return routeOutcome(state);
   if (state.version === "arrangement-v1") return arrangementOutcome(state);
@@ -40,6 +43,7 @@ export function nextStage(
     | ArrangementAttempt
     | RouteAttempt
     | SearchAttempt
+    | SwitchAttempt
   )[],
 ) {
   const passed = new Set(

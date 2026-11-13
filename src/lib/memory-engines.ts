@@ -108,3 +108,18 @@ export const searchEngine: MemoryEngine<SearchAttempt, SearchAction> = {
   recover: recoverSearch,
   reduce: reduceSearch,
 };
+
+import {
+  makeSwitchAttempt,
+  recoverSwitch,
+  reduceSwitch,
+  type SwitchAttempt,
+  type SwitchAction,
+} from "./switch";
+export const switchEngine: MemoryEngine<SwitchAttempt, SwitchAction> = {
+  game: "switch",
+  isAttempt: (a): a is SwitchAttempt => a.version === "switch-v1",
+  make: makeSwitchAttempt,
+  recover: recoverSwitch,
+  reduce: reduceSwitch,
+};

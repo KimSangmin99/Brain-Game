@@ -1,3 +1,4 @@
+import { switchSchema } from "../lib/switch";
 import { z } from "zod";
 import { attemptSchema } from "../lib/pattern";
 import { sequenceSchema } from "../lib/sequence";
@@ -51,17 +52,20 @@ export const completedSchema = z
     arrangementSchema,
     routeSchema,
     searchSchema,
+    switchSchema,
   ])
   .superRefine((a, ctx) => {
     if (
       !z.uuid().safeParse(a.id).success ||
       a.phase !== "result" ||
       a.answers.length !==
-        (a.version === "search-v1"
-          ? 3
-          : ["code-v1", "arrangement-v1", "route-v1"].includes(a.version)
-            ? 1
-            : 5) ||
+        (a.version === "switch-v1"
+          ? 20
+          : a.version === "search-v1"
+            ? 3
+            : ["code-v1", "arrangement-v1", "route-v1"].includes(a.version)
+              ? 1
+              : 5) ||
       !Number.isSafeInteger(a.createdAt) ||
       !Number.isSafeInteger(a.updatedAt) ||
       a.createdAt < 0 ||

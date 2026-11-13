@@ -3802,3 +3802,45 @@ svg {
   min-height: 84px;
   padding: 5px 3px 22px;
 }
+
+/* Rule Switch: reading and preparation stay outside the response clock. */
+.switch-workspace{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(240px,1fr);gap:28px;margin-top:26px;align-items:start}
+.switch-task{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px}
+.switch-rule{display:flex;flex-direction:column;gap:9px;background:#f2ecdc;border:1px solid #d6c49d;border-radius:14px;padding:18px;color:#4d4024}
+.switch-rule strong{font-size:clamp(23px,2.5vw,30px);line-height:1.4}
+.switch-rule>span:last-child{font-size:var(--body-size);line-height:1.7}
+.switch-rule b{padding:0 8px;font-weight:400}
+.switch-blank{min-height:215px;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--muted);line-height:1.8}
+.switch-signal{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:215px;padding:12px;gap:8px}
+.switch-symbol{width:160px;height:150px;overflow:visible;fill:#fff9e9;stroke:#5a5039;stroke-width:3}
+.switch-symbol.dark{fill:#355b43;stroke:#264732}
+.switch-arrow{font-family:Arial,sans-serif;font-size:76px;font-weight:700;fill:#293a2c;stroke:none}
+.dark .switch-arrow{fill:#fff9e9}
+.switch-tone-mark{fill:none;stroke:#fff9e9;stroke-width:2}
+.switch-attributes{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;font-size:var(--small-size)}
+.switch-attributes span{padding:3px 9px;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--text)}
+.switch-start-row{display:flex;align-items:center;gap:16px;justify-content:space-between;margin:12px 0 18px;min-height:54px;flex-wrap:wrap}
+.switch-clock{font-size:var(--small-size);font-variant-numeric:tabular-nums}
+.switch-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}
+.switch-choices .button{min-height:66px;display:flex;flex-wrap:wrap;gap:9px;line-height:1.5;text-align:center;padding:12px}
+.switch-choices kbd{font-family:inherit;border:1px solid var(--line);border-radius:6px;padding:0 7px;background:var(--bg)}
+.switch-learning{padding:8px;line-height:1.85}
+.switch-learning h2,.switch-statistics h2{font-size:24px;line-height:1.5;margin:10px 0}
+.switch-feedback{background:#f6f4eb;border-left:4px solid #92743a;padding:18px;margin:20px 0;text-align:left;line-height:1.85;border-radius:0 10px 10px 0}
+.switch-feedback>strong{font-size:23px}
+.switch-feedback p{margin:8px 0}
+.switch-intro{max-width:760px;line-height:1.9;margin-top:28px}
+.switch-statistics{border-top:1px solid var(--line);margin-top:24px;padding-top:20px;text-align:left;width:100%;line-height:1.8}
+.switch-review{width:100%;text-align:left;margin-top:20px}
+.switch-review summary,.switch-end-options summary{cursor:pointer;min-height:48px;padding:12px 0;font-size:var(--body-size);line-height:1.7}
+.switch-review article{border-top:1px solid var(--line);padding:16px 0}
+.switch-review h3{font-size:21px;margin:0}
+.switch-end-options{display:flex;gap:20px;flex-wrap:wrap;margin-top:22px;align-items:start;line-height:1.8}
+.switch-end-options details{flex:1;min-width:200px}
+.switch-end-options>.text-link{min-height:48px}
+@media(max-width:900px){.switch-workspace{grid-template-columns:1fr;gap:20px}.switch-learning{padding:8px 0}.switch-task{padding:18px}.switch-rule{padding:14px}.switch-start-row{gap:10px}}
+@media(max-width:480px){.switch-task{padding:12px}.switch-choices{gap:8px}.switch-choices .button{padding:10px 5px;font-size:var(--body-size)}.switch-rule strong{font-size:24px}.switch-start-row{flex-direction:column;align-items:stretch}.switch-clock{text-align:center}}
+.switch-task{scroll-margin-top:12px}
+.switch-rule-options{display:flex;gap:4px 20px;flex-wrap:wrap;justify-content:center}
+.switch-rule-options>span{white-space:nowrap}
+@media(max-width:480px){.switch-start-row{flex-direction:row;align-items:center;flex-wrap:nowrap}.switch-start-row .button{padding:12px 14px;flex-shrink:0}.switch-clock{font-size:var(--small-size);white-space:nowrap}.switch-symbol{width:120px;height:120px}.switch-signal{padding:8px;min-height:205px}.switch-blank{min-height:205px}.switch-rule{padding:12px}.switch-rule>span:last-child{font-size:var(--small-size)}}

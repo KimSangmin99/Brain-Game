@@ -3844,3 +3844,67 @@ svg {
 .switch-rule-options{display:flex;gap:4px 20px;flex-wrap:wrap;justify-content:center}
 .switch-rule-options>span{white-space:nowrap}
 @media(max-width:480px){.switch-start-row{flex-direction:row;align-items:center;flex-wrap:nowrap}.switch-start-row .button{padding:12px 14px;flex-shrink:0}.switch-clock{font-size:var(--small-size);white-space:nowrap}.switch-symbol{width:120px;height:120px}.switch-signal{padding:8px;min-height:205px}.switch-blank{min-height:205px}.switch-rule{padding:12px}.switch-rule>span:last-child{font-size:var(--small-size)}}
+
+.account-security {
+  max-width: 820px;
+}
+.security-options,
+.security-form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+.security-options .button {
+  flex: 1;
+  min-width: 180px;
+}
+.security-form {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 24px;
+}
+.security-form h2 {
+  font-size: 26px;
+  line-height: 1.5;
+  margin: 0;
+}
+.security-form p {
+  line-height: 1.85;
+}
+.security-form .consent input {
+  flex-shrink: 0;
+}
+.button.danger {
+  background: #873e38;
+  color: #fff;
+  border: 1px solid #873e38;
+}
+.button.danger:hover {
+  background: #71322d;
+}
+.deletion-warning {
+  padding: 18px;
+  background: #fbefea;
+  border-left: 4px solid #873e38;
+  border-radius: 0 12px 12px 0;
+  color: #583b32;
+}
+@media (max-width: 600px) {
+  .security-form {
+    padding: 16px;
+  }
+  .security-options,
+  .security-form-actions {
+    flex-direction: column;
+  }
+  .security-options .button,
+  .security-form-actions .button {
+    width: 100%;
+    min-width: 0;
+  }
+  .account-security {
+    overflow-wrap: anywhere;
+  }
+}

@@ -94,7 +94,7 @@ describe("account HTTP and PostgreSQL integration", () => {
     expect(stored.password_hash).toMatch(
       /^\$argon2id\$v=19\$m=65536,t=3,p=1\$/,
     );
-    expect(stored.terms_version).toBe("2026-11-09");
+    expect(stored.terms_version).toBe("2026-11-13");
     const [session] = await fixture.db.query<{ token_hash: string }>(
       "SELECT token_hash FROM app_private.auth_sessions WHERE user_id=$1",
       [user.id],

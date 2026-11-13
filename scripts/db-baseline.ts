@@ -18,13 +18,15 @@ if (new URL(url).port === "6543") {
 }
 const through =
   process.argv.find((v) => v.startsWith("--through="))?.split("=")[1] ?? "0000";
-if (!["0000", "0001"].includes(through)) {
-  console.error("--through=0000 또는 --through=0001을 사용하세요.");
+if (!["0000", "0001", "0002"].includes(through)) {
+  console.error(
+    "--through=0000, --through=0001 또는 --through=0002를 사용하세요.",
+  );
   process.exit(1);
 }
 const migrations = readMigrationFiles({ migrationsFolder: "./drizzle" }).slice(
   0,
-  through === "0000" ? 1 : 2,
+  Number(through) + 1,
 );
 const client = postgres(url, options),
   reference = new PGlite();

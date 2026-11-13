@@ -7,3 +7,5 @@ export const GET = (request: NextRequest) =>
   handle(request, productionDatabase);
 export const POST = (request: NextRequest) =>
   handle(request, productionDatabase);
+export const DELETE = (request: NextRequest) =>
+  handle(request, productionDatabase);

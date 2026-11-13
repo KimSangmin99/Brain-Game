@@ -254,3 +254,20 @@ export const authLimits = privateSchema
     (t) => [index("limits_expiry").on(t.expiresAt)],
   )
   .enableRLS();
+
+// Minimal deletion ledger survives removal of the user and their cascading data.
+export const accountDeletions = privateSchema
+  .table(
+    "account_deletions",
+    {
+      userId: uuid("user_id").primaryKey(),
+      loginIdHash: text("login_id_hash").notNull(),
+      receiptHash: text("receipt_hash").notNull(),
+      deletedAt: time("deleted_at").notNull().defaultNow(),
+    },
+    (t) => [
+      uniqueIndex("deleted_login_unique").on(t.loginIdHash),
+      uniqueIndex("deletion_receipt_unique").on(t.receiptHash),
+    ],
+  )
+  .enableRLS();

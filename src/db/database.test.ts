@@ -63,7 +63,7 @@ describe("PostgreSQL migrations and constraints (PGlite)", () => {
     const rows = await db.query<{ relrowsecurity: boolean }>(
       "SELECT relrowsecurity FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='app_private' AND c.relkind='r'",
     );
-    expect(rows.rows).toHaveLength(10);
+    expect(rows.rows).toHaveLength(11);
     expect(rows.rows.every((r) => r.relrowsecurity)).toBe(true);
     try {
       await db.exec("SET ROLE anon");

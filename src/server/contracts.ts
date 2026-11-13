@@ -33,15 +33,40 @@ const blocked = new Set([
   "111111111111111",
   "000000000000000",
 ]);
-export const TERMS_VERSION = "2026-11-09";
+export const TERMS_VERSION = "2026-11-13";
+export const newPasswordSchema = passwordSchema.refine(
+  (v) => !blocked.has(v.toLowerCase()) && !/^(.)\1+$/u.test(v),
+  "쉽게 추측되는 비밀번호입니다. 다른 문장을 사용해 주세요.",
+);
+export const reauthenticateSchema = z.object({
+  currentPassword: z.string().min(1, "현재 비밀번호를 입력해 주세요.").max(128),
+});
+export const changePasswordSchema = reauthenticateSchema
+  .extend({ newPassword: newPasswordSchema, confirmPassword: z.string() })
+  .refine((v) => v.newPassword === v.confirmPassword, {
+    message: "새 비밀번호 확인이 일치하지 않습니다.",
+    path: ["confirmPassword"],
+  })
+  .refine((v) => v.newPassword !== v.currentPassword, {
+    message: "현재 비밀번호와 다른 새 비밀번호를 입력해 주세요.",
+    path: ["newPassword"],
+  });
+export const deletionReceiptSchema = z.object({
+  userId: z.uuid(),
+  receipt: z.uuid(),
+});
+export const deleteAccountSchema = reauthenticateSchema.extend({
+  confirmationId: loginIdSchema,
+  acknowledged: z.literal(true, {
+    error: "삭제 범위와 복구 불가 안내를 확인해 주세요.",
+  }),
+  receipt: z.uuid(),
+});
 export const registerSchema = loginSchema.extend({
   accepted: z.literal(true, {
     error: "이용 안내와 개인정보 안내를 확인해 주세요.",
   }),
-  password: passwordSchema.refine(
-    (v) => !blocked.has(v.toLowerCase()) && !/^(.)\1+$/u.test(v),
-    "쉽게 추측되는 비밀번호입니다. 다른 문장을 사용해 주세요.",
-  ),
+  password: newPasswordSchema,
 });
 export const completedSchema = z
   .union([

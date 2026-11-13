@@ -1,10 +1,24 @@
 import { NextRequest, NextResponse } from "next/server.js";
 import { ZodError } from "zod";
 import type { Database } from "./database";
-import { loginSchema, registerSchema } from "./contracts";
+import {
+  loginSchema,
+  registerSchema,
+  reauthenticateSchema,
+  changePasswordSchema,
+  deleteAccountSchema,
+  deletionReceiptSchema,
+} from "./contracts";
 import { register, login, logout, currentUser, rateLimit } from "./auth";
 import { importRecords, listRecords } from "./records";
 import { AppError } from "./errors";
+import {
+  accountCapabilities,
+  changePassword,
+  logoutEverywhere,
+  deleteAccount,
+  deletionStatus,
+} from "./auth";
 const secure = process.env.NODE_ENV === "production";
 export const cookieName = secure ? "__Host-brain_session" : "brain_session";
 const cookieOptions = {
@@ -116,6 +130,14 @@ export async function handle(request: NextRequest, dbFactory: () => Database) {
       response.cookies.set(cookieName, "", { ...cookieOptions, maxAge: 0 });
       return response;
     }
+    if (path === "/auth/deletion-status" && method === "POST")
+      return json(
+        await deletionStatus(
+          db,
+          deletionReceiptSchema.parse(await body(request, 4096)),
+          ip,
+        ),
+      );
     const user = await currentUser(db, token);
     if (path === "/me" && method === "GET") return json({ user });
     if (!user)
@@ -126,6 +148,44 @@ export async function handle(request: NextRequest, dbFactory: () => Database) {
         "ACCOUNT_CHANGED",
         "로그인 계정이 변경됐습니다. 새로고침해 주세요.",
       );
+    if (path === "/me/security" && method === "GET")
+      return json(await accountCapabilities(db));
+    if (
+      ((path === "/auth/password" || path === "/auth/logout-all") &&
+        method === "POST") ||
+      (path === "/me" && method === "DELETE")
+    ) {
+      const input = await body(request, 4096);
+      if (path === "/auth/password")
+        await changePassword(
+          db,
+          user.id,
+          token!,
+          changePasswordSchema.parse(input),
+          ip,
+        );
+      else if (path === "/auth/logout-all")
+        await logoutEverywhere(
+          db,
+          user.id,
+          token!,
+          reauthenticateSchema.parse(input).currentPassword,
+          ip,
+        );
+      else
+        await deleteAccount(
+          db,
+          user.id,
+          token!,
+          deleteAccountSchema.parse(input),
+          ip,
+        );
+      const response = json(
+        path === "/me" ? { deleted: true } : { user: null },
+      );
+      response.cookies.set(cookieName, "", { ...cookieOptions, maxAge: 0 });
+      return response;
+    }
     if (path === "/records" && method === "GET")
       return json(
         await listRecords(

@@ -50,6 +50,52 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
       live = false;
     };
   }, []);
+  useEffect(() => {
+    let live = true;
+    const refresh = () => {
+      if (document.hidden) return;
+      void api<{ user: PublicUser | null }>("/me")
+        .then((r) => {
+          if (live) {
+            setUser((current) =>
+              current?.id === r.user?.id &&
+              current?.loginId === r.user?.loginId &&
+              current?.nickname === r.user?.nickname
+                ? current
+                : r.user,
+            );
+            if (!r.user && user) {
+              setStatus("로그인이 종료됐습니다. 다시 로그인해 주세요.");
+              setSyncError(false);
+            }
+          }
+        })
+        .catch(() => {
+          /* A network failure must not silently move account records into guest storage. */
+        });
+    };
+    const storage = (e: StorageEvent) => {
+      if (
+        e.key === "brain-session-change" ||
+        e.key === `brain-deleted-${user?.id}`
+      )
+        refresh();
+    };
+    const expired = (e: Event) => {
+      if ((e as CustomEvent).detail === user?.id) refresh();
+    };
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    window.addEventListener("storage", storage);
+    window.addEventListener("brain-session-expired", expired);
+    return () => {
+      live = false;
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("storage", storage);
+      window.removeEventListener("brain-session-expired", expired);
+    };
+  }, [user]);
   const upload = useCallback(
     async (records: MemoryAttempt[], guest = false) => {
       if (!user) return;

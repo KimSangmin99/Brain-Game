@@ -10,6 +10,12 @@ export async function importRecords(
 ) {
   const { guestProfileId, records } = importSchema.parse(input);
   return db.transaction(async (tx) => {
+    const users = await tx.query(
+      "SELECT id FROM app_private.users WHERE id=$1 AND status='active' FOR UPDATE",
+      [userId],
+    );
+    if (!users.length)
+      throw new AppError(401, "LOGIN_REQUIRED", "로그인이 필요합니다.");
     for (const a of records) {
       const game = attemptGame(a),
         r = outcome(a);

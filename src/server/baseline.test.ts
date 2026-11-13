@@ -27,7 +27,7 @@ it("adopts manually applied initial SQL without replaying CREATE TABLE, then mig
     ).toBe("fixture");
     expect(
       await db.query("SELECT * FROM drizzle.__drizzle_migrations"),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
     await expect(adoptBaseline(db, [migrations[0]])).rejects.toThrow(
       "기존 마이그레이션 이력",
     );

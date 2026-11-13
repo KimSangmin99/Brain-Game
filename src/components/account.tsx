@@ -2,11 +2,17 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAccount } from "./account-provider";
-import { api } from "@/lib/account-api";
+import { takeAccountNotice } from "@/lib/account-session";
+import { api, notifySessionChange } from "@/lib/account-api";
 import { readAllAttempts } from "@/lib/storage";
 import type { MemoryAttempt } from "@/lib/memory-types";
 export function AuthForm({ register = false }: { register?: boolean }) {
   const { user } = useAccount();
+  const [notice, setNotice] = useState("");
+  useEffect(() => {
+    const message = takeAccountNotice();
+    if (message) setNotice(message);
+  }, []);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   if (user)
@@ -23,6 +29,11 @@ export function AuthForm({ register = false }: { register?: boolean }) {
       <span className="eyebrow">MY BRAINLAB</span>
       <h1>{register ? "연구원으로 시작하기" : "다시 만나 반가워요"}</h1>
       <p>ID와 비밀번호로 나의 완료 기록을 이어갑니다.</p>
+      {notice && (
+        <p className="notice" role="status">
+          {notice}
+        </p>
+      )}
       <form
         className="account-form"
         onSubmit={async (e) => {
@@ -37,6 +48,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
               password: form.get("password"),
               ...(register ? { accepted: form.get("accepted") === "on" } : {}),
             });
+            notifySessionChange();
             window.location.assign("/account");
           } catch (e) {
             setError(
@@ -110,6 +122,11 @@ export function AuthForm({ register = false }: { register?: boolean }) {
   );
 }
 export function Account() {
+  const [notice, setNotice] = useState("");
+  useEffect(() => {
+    const message = takeAccountNotice();
+    if (message) setNotice(message);
+  }, []);
   const { user, load, upload, status, syncError } = useAccount();
   const [guest, setGuest] = useState<MemoryAttempt[]>([]),
     [accountCount, setAccountCount] = useState(0),
@@ -145,6 +162,14 @@ export function Account() {
     return (
       <section className="account-panel">
         <h1>나의 연구 기록을 이어가세요</h1>
+        {notice && (
+          <p className="notice" role="status">
+            {notice}
+          </p>
+        )}
+        <p>
+          <Link href="/account/security">계정 관리·이전 탈퇴 요청 확인</Link>
+        </p>
         <p>
           로그인하면 완료한 기록과 단계 진행을 다른 기기에서도 불러올 수 있어요.
         </p>
@@ -242,6 +267,11 @@ export function Account() {
         않습니다. 진행 중인 문항은 기기 간 동기화되지 않습니다.
       </p>
       <p>복구 이메일 기능은 준비 중입니다.</p>
+      <p>
+        <Link className="button secondary" href="/account/security">
+          계정 보안·비밀번호·탈퇴 관리
+        </Link>
+      </p>
       <div className="hero-actions">
         <Link className="button primary" href="/records">
           내 기록 보기
@@ -253,6 +283,7 @@ export function Account() {
             setBusy(true);
             try {
               await api("/auth/logout", {});
+              notifySessionChange();
               window.location.assign("/");
             } catch {
               setError("로그아웃하지 못했습니다. 다시 시도해 주세요.");

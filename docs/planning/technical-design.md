@@ -29,7 +29,7 @@
 
 ID는 UUID, 시간은 UTC timestamp, 점수·시도 수는 정수. 아래 관계와 유일성은 DB 제약으로 구현한다.
 
-현재 첫 마이그레이션은 users, auth_sessions, action_tokens, attempts, progress, merge_receipts, challenge_events, official_entries, email_outbox의 9개 기반 테이블을 제공하고, 두 번째 마이그레이션은 auth_limits와 users의 안내 확인 열 2개를 추가한다. 확인된 이메일과 확인 시각은 우선 users에 저장한다. 아래 모델의 콘텐츠 관리·문항 이벤트·요청키·감사·삭제 처리 등은 후속 마이그레이션으로 확장한다. 현재 기본 회원·개인 완료 기록 동기화는 구현했으며 복구 이메일·공식 경쟁은 구현 전이다.
+현재 첫 마이그레이션은 users, auth_sessions, action_tokens, attempts, progress, merge_receipts, challenge_events, official_entries, email_outbox의 9개 기반 테이블을 제공하고, 두 번째 마이그레이션은 auth_limits와 users의 안내 확인 열 2개를 추가한다. 확인된 이메일과 확인 시각은 우선 users에 저장한다. 아래 모델의 콘텐츠 관리·문항 이벤트·요청키·감사·삭제 처리 등은 후속 마이그레이션으로 확장한다. 현재 기본 회원·개인 완료 기록 동기화와 비밀번호 변경·전체 로그아웃·즉시 탈퇴를 구현했다. 세 번째 마이그레이션은 account_deletions 최소 원장을 추가한다. 복구 이메일·공식 경쟁은 구현 전이다.
 
 | 테이블 | 핵심 데이터·제약 |
 | --- | --- |
@@ -71,7 +71,11 @@ ID는 UUID, 시간은 UTC timestamp, 점수·시도 수는 정수. 아래 관계
 | POST /auth/recovery/reset | token,newPassword | 200 재설정·전체 세션 폐기, 재사용410 |
 | POST /auth/id-reminder | email | 항상202 안내, 확인된 주소로만 ID 발송 |
 | DELETE /me/recovery-email | currentPassword | 204 해제 |
-| DELETE /me | currentPassword | 202 삭제 예약·세션 폐기·공개 비식별화 |
+| POST /auth/password | currentPassword,newPassword,confirmPassword | 200 변경·모든 세션/토큰 폐기, 새 비밀번호로 재로그인 |
+| POST /auth/logout-all | currentPassword | 200 모든 세션 폐기, 기록 보존 |
+| GET /me/security | 세션·계정 일치 | 200 탈퇴 서버 준비 상태 |
+| DELETE /me | currentPassword,confirmationId,acknowledged,receipt | 200 즉시 삭제·세션 폐기·최소 원장 저장, SQL 미적용503 |
+| POST /auth/deletion-status | userId,receipt | 200 삭제 확인값이 일치할 때만 deleted:true, 삭제 작업 없음 |
 | GET /games, /games/{id}/stages | optional session | 200 목록·공개 규칙·진행. private_solution 제외 |
 | POST /attempts | gameId,mode,stageId or practiceParams,idempotencyKey | 201 일반 학습 세션; 공식 mode 직접 생성 거부 |
 | GET /attempts/{id} | 소유권 | 200 접수·문항 상태·저장 상태. 다른 사람404 |
